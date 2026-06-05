@@ -2,8 +2,6 @@
 
 ## Mục tiêu
 
-Bài này giải phần 08 challenge bằng Terraform:
-
 - Dựng 1 EC2 instance trên AWS.
 - Chạy Kubernetes trên EC2 bằng `minikube`.
 - App chạy bên trong Kubernetes, không cài trực tiếp lên EC2.
@@ -79,6 +77,30 @@ Target Group -> EC2:30080
                  v
               nginx Deployment, 2 pods
 ```
+
+## Vì sao chọn kiến trúc này
+
+- Đề bài yêu cầu app chạy trong Kubernetes trên EC2 và truy cập được từ Internet qua ALB, nên kiến trúc giữ đúng các thành phần chính: `EC2`, `minikube`, `Kubernetes Service`, `ALB`.
+- Chọn 1 EC2 chạy `minikube` vì đủ để chứng minh cách vận hành Kubernetes trong phạm vi lab, nhẹ hơn EKS và dễ destroy sau khi nộp bài.
+- Chọn ALB làm entrypoint public vì ALB là lớp nhận traffic từ Internet, còn EC2 chỉ đóng vai trò worker chạy Kubernetes.
+- Chọn `NodePort` cố định `30080` vì ALB cần forward request tới một port ổn định trên EC2.
+- Thêm `socat` vì minikube chạy bằng Docker driver, node Kubernetes nằm trong Docker network. ALB chỉ thấy EC2, không thấy trực tiếp IP bên trong minikube, nên cần forward từ `EC2:30080` vào `minikube IP:30080`.
+
+## Vì sao chọn các giải pháp trong lab
+
+- Dùng Terraform module để tách rõ trách nhiệm: `network` tạo VPC/subnet, `security` tạo security group, `ec2-minikube` tạo máy chạy Kubernetes, `alb` tạo public load balancer.
+- Dùng `cloudinit` để render bootstrap script rồi truyền vào `user_data`, giúp EC2 tự cài Docker, minikube, kubectl, socat và deploy app ngay khi được tạo.
+- Dùng `tls` để tạo SSH key pair phục vụ lab, tránh phải tạo key thủ công trước khi chạy Terraform.
+- Dùng `null` để chạy bước kiểm tra sau khi apply, ví dụ kiểm tra EC2 đã sẵn sàng và app phản hồi qua ALB.
+- Dùng `nginx` và ConfigMap để demo app đơn giản, không cần build image riêng hoặc push lên registry.
+- Dùng script `apply`/`destroy` cho Windows và Linux/macOS để bài lab có thể chạy một lệnh, đúng tinh thần automation của challenge.
+
+## Đánh đổi của lab
+
+- ConfigMap chứa HTML phù hợp cho demo nhỏ; môi trường thật nên build image riêng và quản lý version rõ ràng.
+- SSH key do `tls` tạo sẽ nằm trong Terraform state; production nên dùng key được quản lý riêng hoặc AWS SSM Session Manager.
+- `socat` là lớp forward bổ sung để phù hợp với minikube trên EC2; production thường dùng EKS, ingress controller hoặc kiến trúc network ổn định hơn.
+- Security group nên giới hạn SSH theo IP cá nhân thay vì mở rộng.
 
 ## Cách chạy một lệnh
 
