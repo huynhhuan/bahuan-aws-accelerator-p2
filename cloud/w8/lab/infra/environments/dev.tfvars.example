@@ -1,0 +1,5 @@
+aws_region      = "ap-southeast-1"
+project_name    = "w8-minikube-tf"
+instance_type   = "t3.medium"
+app_node_port   = 30080
+ssh_cidr_blocks = ["0.0.0.0/0"]

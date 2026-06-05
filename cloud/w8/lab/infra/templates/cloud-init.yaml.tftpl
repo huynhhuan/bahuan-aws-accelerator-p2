@@ -1,0 +1,127 @@
+#cloud-config
+package_update: true
+package_upgrade: false
+
+packages:
+  - ca-certificates
+  - curl
+  - docker.io
+  - socat
+
+write_files:
+  - path: /opt/k8s-challenge/app.yaml
+    owner: root:root
+    permissions: "0644"
+    content: |
+      ${app_manifest}
+
+  - path: /usr/local/bin/minikube-nodeport-forward.sh
+    owner: root:root
+    permissions: "0755"
+    content: |
+      #!/usr/bin/env bash
+      set -euo pipefail
+
+      PROFILE="${cluster_name}"
+      NODE_PORT="${node_port}"
+
+      MINIKUBE_IP=""
+      for i in $(seq 1 90); do
+        MINIKUBE_IP="$(sudo -u ubuntu -H minikube -p "$${PROFILE}" ip 2>/dev/null || true)"
+        if [ -n "$${MINIKUBE_IP}" ]; then
+          break
+        fi
+        sleep 2
+      done
+
+      test -n "$${MINIKUBE_IP}"
+      exec /usr/bin/socat TCP-LISTEN:"$${NODE_PORT}",fork,reuseaddr,bind=0.0.0.0 TCP:"$${MINIKUBE_IP}":"$${NODE_PORT}"
+
+  - path: /etc/systemd/system/minikube-nodeport-forward.service
+    owner: root:root
+    permissions: "0644"
+    content: |
+      [Unit]
+      Description=Forward EC2 host NodePort to minikube node IP
+      After=docker.service
+      Requires=docker.service
+
+      [Service]
+      Type=simple
+      ExecStart=/usr/local/bin/minikube-nodeport-forward.sh
+      Restart=always
+      RestartSec=5
+
+      [Install]
+      WantedBy=multi-user.target
+
+  - path: /opt/k8s-challenge/bootstrap.sh
+    owner: root:root
+    permissions: "0755"
+    content: |
+      #!/usr/bin/env bash
+      set -euo pipefail
+
+      KUBERNETES_VERSION="v1.30.0"
+      CLUSTER_NAME="${cluster_name}"
+      NODE_PORT="${node_port}"
+
+      systemctl enable --now docker
+      usermod -aG docker ubuntu
+
+      for i in $(seq 1 60); do
+        if docker info >/dev/null 2>&1; then
+          break
+        fi
+        sleep 2
+      done
+      docker info >/dev/null
+
+      if ! command -v kubectl >/dev/null 2>&1; then
+        curl -fsSL -o /usr/local/bin/kubectl "https://dl.k8s.io/release/$${KUBERNETES_VERSION}/bin/linux/amd64/kubectl"
+        chmod 0755 /usr/local/bin/kubectl
+      fi
+
+      if ! command -v minikube >/dev/null 2>&1; then
+        curl -fsSL -o /usr/local/bin/minikube "https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64"
+        chmod 0755 /usr/local/bin/minikube
+      fi
+
+      sudo -u ubuntu -H minikube start \
+        -p "$${CLUSTER_NAME}" \
+        --driver=docker \
+        --container-runtime=containerd \
+        --cpus=2 \
+        --memory=2200mb \
+        --kubernetes-version="$${KUBERNETES_VERSION}" \
+        --wait=all \
+        --wait-timeout=6m
+
+      sudo -u ubuntu -H kubectl apply -f /opt/k8s-challenge/app.yaml
+      sudo -u ubuntu -H kubectl -n challenge rollout status deployment/challenge-web --timeout=180s
+
+      systemctl daemon-reload
+      systemctl enable --now minikube-nodeport-forward.service
+
+      healthy=0
+      for i in $(seq 1 60); do
+        if curl -fsS "http://127.0.0.1:$${NODE_PORT}/healthz" >/dev/null; then
+          healthy=1
+          break
+        fi
+        sleep 5
+      done
+      test "$${healthy}" -eq 1
+
+      {
+        echo "status=ok"
+        echo "cluster=$${CLUSTER_NAME}"
+        echo "node_port=$${NODE_PORT}"
+        echo "minikube_ip=$(sudo -u ubuntu -H minikube -p "$${CLUSTER_NAME}" ip)"
+        echo "checked_at=$(date -Is)"
+        sudo -u ubuntu -H minikube -p "$${CLUSTER_NAME}" status
+        sudo -u ubuntu -H kubectl -n challenge get deploy,svc,pods -o wide
+      } > /opt/k8s-challenge/status.txt
+
+runcmd:
+  - [bash, -lc, "/opt/k8s-challenge/bootstrap.sh > /var/log/k8s-challenge-bootstrap.log 2>&1"]
