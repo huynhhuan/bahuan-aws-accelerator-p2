@@ -1,0 +1,5 @@
+bucket         = "CHANGE-ME-terraform-state-bucket"
+key            = "final-project/dev/terraform.tfstate"
+region         = "ap-southeast-1"
+dynamodb_table = "CHANGE-ME-terraform-locks"
+encrypt        = true

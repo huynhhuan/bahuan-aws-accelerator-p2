@@ -1,0 +1,29 @@
+aws_region   = "ap-southeast-1"
+project_name = "webapp"
+environment  = "dev"
+owner        = "student"
+
+vpc_cidr                = "10.0.0.0/16"
+availability_zone_count = 2
+
+# Keep NAT disabled for the lab to reduce cost. Enable it if private subnet
+# workloads need outbound internet access.
+enable_nat_gateway = false
+single_nat_gateway = true
+
+http_ingress_cidr_blocks = ["0.0.0.0/0"]
+ssh_ingress_cidr_blocks  = []
+
+web_instance_type      = "t3.micro"
+web_root_volume_size   = 10
+assets_bucket_name     = null
+db_instance_class        = "db.t3.micro"
+db_allocated_storage     = 20
+db_max_allocated_storage = 100
+
+# Production-friendly defaults. Set db_deletion_protection=false before destroy.
+db_multi_az                      = false
+db_deletion_protection           = true
+db_skip_final_snapshot           = false
+db_backup_retention_period       = 7
+db_performance_insights_enabled  = false

@@ -1,0 +1,11 @@
+aws_region   = "ap-southeast-1"
+project_name = "webapp"
+environment  = "dev"
+owner        = "student"
+
+# Leave null to use deterministic names containing the AWS account ID and region.
+state_bucket_name          = null
+state_bucket_force_destroy = false
+lock_table_name            = null
+
+state_key = "final-project/dev/terraform.tfstate"
