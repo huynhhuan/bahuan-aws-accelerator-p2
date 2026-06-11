@@ -17,7 +17,7 @@ spec:
 
         - alert: ApiHighErrorRate
           expr: api:success_rate:5m < 0.95
-          for: 2m
+          for: 0s
           labels:
             severity: warning
           annotations:
