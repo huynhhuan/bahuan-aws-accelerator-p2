@@ -20,6 +20,11 @@ spec:
             ruleSelectorNilUsesHelmValues: false
             ruleNamespaceSelector: {}
 
+        prometheusOperator:
+          admissionWebhooks:
+            patch:
+              enabled: false
+
         alertmanager:
           alertmanagerSpec:
             secrets:
