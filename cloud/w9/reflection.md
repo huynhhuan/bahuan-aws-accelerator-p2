@@ -59,3 +59,30 @@ Chuẩn bị Day C:
 - Canary Deployment
 - Progressive Delivery
 - Argo Rollouts
+
+# Reflection - W9 Day C
+
+## Những gì đã học
+
+- AWS X-Ray
+- Trace
+- Segment
+- Subsegment
+- Service Map
+- EventBridge
+- Security Monitoring
+- Cost Monitoring
+
+## Điều tâm đắc
+
+Logs cho biết điều gì xảy ra.
+
+Metrics cho biết hệ thống khỏe hay không.
+
+X-Ray cho biết chính xác request chậm ở đâu.
+
+## Kế hoạch tiếp theo
+
+- Thực hành X-Ray trên Lambda
+- Thực hành EventBridge Rule
+- Thực hành Cost Budget Alert
