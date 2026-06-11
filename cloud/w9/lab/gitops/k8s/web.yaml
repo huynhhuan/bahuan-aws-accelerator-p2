@@ -10,6 +10,7 @@ metadata: { name: web, namespace: demo,
   annotations: { argocd.argoproj.io/sync-wave: "1" } }
 spec:
   replicas: 3
+  invalidFieldForCiTest: true
   selector: { matchLabels: { app: web } }
   template:
     metadata: { labels: { app: web } }
