@@ -1,0 +1,30 @@
+apiVersion: monitoring.coreos.com/v1alpha1
+kind: AlertmanagerConfig
+metadata:
+  name: api-email
+  namespace: monitoring
+  labels:
+    app: api
+spec:
+  route:
+    receiver: email
+    groupBy: ["alertname"]
+    groupWait: 10s
+    groupInterval: 1m
+    repeatInterval: 30m
+    matchers:
+      - name: alertname
+        matchType: =
+        value: ApiHighErrorRate
+  receivers:
+    - name: email
+      emailConfigs:
+        - to: huynhbahuan@gmail.com
+          from: huynhbahuan@gmail.com
+          smarthost: smtp.gmail.com:587
+          authUsername: huynhbahuan@gmail.com
+          authPassword:
+            name: alertmanager-smtp
+            key: smtp-password
+          requireTLS: true
+          sendResolved: true
