@@ -6,36 +6,15 @@
 
 ## 2. Chọn metric CPUUtilization của EC2
 
-![alt text](image-6.png)
+![alt text](image-6.  png)
 
 ## 3. Cấu hình điều kiện CloudWatch Alarm
 
-Ảnh cần chụp: Màn hình `Specify metric and conditions`.
-
-![Cấu hình điều kiện alarm](evidence-cpu-alarm-05-alarm-condition.png)
-
-Cấu hình đã dùng:
-
-| Trường | Giá trị |
-| --- | --- |
-| Statistic | `Average` |
-| Period | `5 minutes` |
-| Threshold type | `Static` |
-| Condition | `Greater than 80` |
-| Datapoints to alarm | `1 out of 1` |
-| Missing data treatment | `Treat missing data as missing` hoặc mặc định |
+![alt text](image-10.png)
 
 ## 4. Gắn SNS notification action
 
-Ảnh cần chụp: Màn hình `Configure actions`, phần notification khi alarm vào trạng thái `In alarm`.
-
-![Gắn SNS notification action](evidence-cpu-alarm-06-notification-action.png)
-
-Kết quả mong đợi:
-
-- Trạng thái notification là `In alarm`.
-- SNS topic được chọn là `cw-ec2-cpu-alarm-topic`.
-- Nếu có thêm recovery alert, trạng thái `OK` cũng gửi về cùng SNS topic.
+![alt text](image-11.png)
 
 ## 5. CloudWatch Alarm đã được tạo
 
