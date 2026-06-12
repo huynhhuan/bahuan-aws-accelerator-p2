@@ -43,16 +43,8 @@ kill $PIDS
 
 ![alt text](image-8.png)
 
-## 8. Dọn dẹp tài nguyên
 
-Ảnh hoặc ghi chú cần có nếu giảng viên yêu cầu:
-
-- Alarm `EC2-CPU-High-80-5min` đã được xóa sau lab.
-- SNS subscription đã được xóa nếu không dùng nữa.
-- SNS topic `cw-ec2-cpu-alarm-topic` đã được xóa nếu không dùng nữa.
-- EC2 đã được stop/terminate nếu chỉ dùng cho bài lab.
-
-## 9. Các lệnh chính đã sử dụng
+## 8. Các lệnh chính đã sử dụng
 
 Tạo CPU load trên EC2:
 
@@ -85,7 +77,7 @@ aws cloudwatch set-alarm-state \
   --state-reason "Lab test: reset alarm state after email verification"
 ```
 
-## 10. Kết luận
+## 9. Kết luận
 
 Bài lab đã cấu hình thành công CloudWatch Alarm theo dõi `CPUUtilization` của EC2. Khi CPU vượt ngưỡng `80%` theo chu kỳ đánh giá đã cấu hình, alarm chuyển sang trạng thái `ALARM` và gửi notification đến SNS topic `cw-ec2-cpu-alarm-topic`. Email subscription đã được xác nhận nên người nhận nhận được email cảnh báo từ `AWS Notifications`.
 
