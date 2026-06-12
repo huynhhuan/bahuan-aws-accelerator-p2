@@ -63,23 +63,6 @@ kubectl -n demo scale deploy/web --replicas=9
 ![alt text](images/image-15.png)
 ![alt text](images/image-16.png)
 
-### 2.5. Rollback bằng Git
-
-Chạy:
-
-```powershell
-git log --oneline -5
-git revert HEAD --no-edit
-git push
-kubectl -n argocd get app web
-```
-
-Cần chụp:
-
-- Commit revert trên GitHub hoặc terminal `git log`.
-- ArgoCD app sync về revision mới.
-- Resource trong cluster quay về trạng thái trước đó.
-
 ## 3. Evidence CI/CD - Validate và Branch Protection
 
 ### 3.1. Workflow validate
