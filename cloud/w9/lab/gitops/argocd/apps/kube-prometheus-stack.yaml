@@ -29,6 +29,9 @@ spec:
           alertmanagerSpec:
             alertmanagerConfigMatcherStrategy:
               type: None
+            initContainers:
+              - name: init-config-reloader
+                restartPolicy: Always
           config:
             route:
               receiver: "null"
