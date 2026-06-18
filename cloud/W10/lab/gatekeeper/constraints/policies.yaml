@@ -11,7 +11,7 @@ spec:
     kinds:
       - apiGroups: [""]
         kinds: ["Pod"]
-    excludedNamespaces: ["kube-system", "gatekeeper-system", "argocd", "default"] # Best Practice: Áp dụng toàn cụm trừ các ns hệ thống
+    excludedNamespaces: ["kube-system", "gatekeeper-system", "argocd", "default", "cosign-system"] # Best Practice: Áp dụng toàn cụm trừ các ns hệ thống
   parameters:
     tags: ["latest"]
 
@@ -29,7 +29,7 @@ spec:
     kinds:
       - apiGroups: [""]
         kinds: ["Pod"]
-    excludedNamespaces: ["kube-system", "gatekeeper-system", "argocd", "default"]
+    excludedNamespaces: ["kube-system", "gatekeeper-system", "argocd", "default", "cosign-system"]
 
 ---
 # 3. Cấm runAsUser: 0 (chạy root)
@@ -45,7 +45,7 @@ spec:
     kinds:
       - apiGroups: [""]
         kinds: ["Pod"]
-    excludedNamespaces: ["kube-system", "gatekeeper-system", "argocd", "default"]
+    excludedNamespaces: ["kube-system", "gatekeeper-system", "argocd", "default", "cosign-system"]
   parameters:
     runAsUser:
       rule: MustRunAsNonRoot
@@ -64,6 +64,6 @@ spec:
     kinds:
       - apiGroups: [""]
         kinds: ["Pod"]
-    excludedNamespaces: ["kube-system", "gatekeeper-system", "argocd", "default"]
+    excludedNamespaces: ["kube-system", "gatekeeper-system", "argocd", "default", "cosign-system"]
   parameters:
     hostNetwork: false
