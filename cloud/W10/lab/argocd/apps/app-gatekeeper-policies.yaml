@@ -18,3 +18,5 @@ spec:
     automated:
       prune: true
       selfHeal: true
+    syncOptions:
+      - SkipDryRunOnMissingResource=true # Bỏ qua bước kiểm tra Dry-Run cho các Resource chưa có CRD (như K8sRequiredLabels)
