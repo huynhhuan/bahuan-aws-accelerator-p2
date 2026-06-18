@@ -83,6 +83,7 @@ jobs:
       - name: Sign image with Cosign
         env:
           COSIGN_PRIVATE_KEY: ${{ secrets.COSIGN_PRIVATE_KEY }}
+          COSIGN_PASSWORD: ""
         run: |
           cosign sign --key env://COSIGN_PRIVATE_KEY -y ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.semver.outputs.version }}
 
