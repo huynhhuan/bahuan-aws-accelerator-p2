@@ -1,0 +1,127 @@
+# ==================================================
+# Alice - Developer (namespace demo)
+# CRUD workload trong namespace demo
+# ==================================================
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: developer-role
+  namespace: demo
+rules:
+# Core resources
+- apiGroups: [""]
+  resources:
+    - pods
+    - services
+    - endpoints
+  verbs:
+    - create
+    - delete
+    - get
+    - list
+    - watch
+    - patch
+    - update
+
+# Deployments / ReplicaSets
+- apiGroups: ["apps"]
+  resources:
+    - deployments
+    - replicasets
+  verbs:
+    - create
+    - delete
+    - get
+    - list
+    - watch
+    - patch
+    - update
+
+# Argo Rollouts
+- apiGroups: ["argoproj.io"]
+  resources:
+    - rollouts
+  verbs:
+    - create
+    - delete
+    - get
+    - list
+    - watch
+    - patch
+    - update
+
+---
+# ==================================================
+# Bob - SRE (cluster-wide)
+# Xem + thao tác Pod toàn cụm
+# ==================================================
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: sre-role
+rules:
+- apiGroups: [""]
+  resources:
+    - pods
+  verbs:
+    - get
+    - list
+    - watch
+    - delete
+    - create
+    - update
+    - patch
+
+- apiGroups: [""]
+  resources:
+    - pods/log
+  verbs:
+    - get
+    - list
+    - watch
+
+- apiGroups: [""]
+  resources:
+    - pods/exec
+    - pods/portforward
+  verbs:
+    - create
+
+---
+# ==================================================
+# Carol - Viewer (cluster-wide readonly)
+# ==================================================
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: viewer-role
+rules:
+- apiGroups: [""]
+  resources:
+    - pods
+    - services
+    - endpoints
+    - namespaces
+  verbs:
+    - get
+    - list
+    - watch
+
+- apiGroups: ["apps"]
+  resources:
+    - deployments
+    - replicasets
+    - daemonsets
+    - statefulsets
+  verbs:
+    - get
+    - list
+    - watch
+
+- apiGroups: ["argoproj.io"]
+  resources:
+    - rollouts
+  verbs:
+    - get
+    - list
+    - watch
