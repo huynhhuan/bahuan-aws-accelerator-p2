@@ -1,21 +1,30 @@
+# CI validate manifest (W9 base). Path khop voi cau truc repo W10.
 name: validate
-
-"on":
+on:
   pull_request:
     paths:
-      - "cloud/w9/lab/gitops/k8s/**"
+    - 'cloud/W10/lab/app-api/**'
+    - 'cloud/W10/lab/app-analysis/**'
+    - 'cloud/W10/lab/app-alert/**'
+    - 'cloud/W10/lab/app-common/**'
+    - 'cloud/W10/lab/argocd/**'
+    # W10 se them: rbac/**, gatekeeper/**, eso/**, signing/**
 
 jobs:
   validate:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+    - uses: actions/checkout@v4
 
-      - name: Install kubeconform
-        run: |
-          curl -sSLo kubeconform.tar.gz https://github.com/yannh/kubeconform/releases/download/v0.6.7/kubeconform-linux-amd64.tar.gz
-          tar -xzf kubeconform.tar.gz
-          sudo mv kubeconform /usr/local/bin/
+    - name: Install kubeconform
+      run: |
+        curl -sSLo kc.tgz https://github.com/yannh/kubeconform/releases/download/v0.6.7/kubeconform-linux-amd64.tar.gz
+        tar -xzf kc.tgz
+        sudo mv kubeconform /usr/local/bin/
 
-      - name: Validate Kubernetes manifests
-        run: kubeconform -strict -summary cloud/w9/lab/gitops/k8s/
+    # -ignore-missing-schemas: bo qua CRD chua biet schema (Rollout, Application,
+    # ServiceMonitor, PrometheusRule, AnalysisTemplate, Constraint, ExternalSecret...)
+    - name: Validate manifests
+      run: |
+        kubeconform -strict -summary -ignore-missing-schemas \
+          cloud/W10/lab/app-api/ cloud/W10/lab/app-analysis/ cloud/W10/lab/app-alert/ cloud/W10/lab/app-common/ cloud/W10/lab/argocd/
