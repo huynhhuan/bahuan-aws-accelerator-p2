@@ -11,6 +11,8 @@ spec:
     repoURL: https://github.com/huynhhuan/bahuan-aws-accelerator-p2.git
     path: cloud/W10/lab/gatekeeper
     targetRevision: main
+    directory:
+      recurse: true
   destination:
     server: https://kubernetes.default.svc
     namespace: gatekeeper-system
