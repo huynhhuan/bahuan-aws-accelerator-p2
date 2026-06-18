@@ -43,6 +43,11 @@ jobs:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Debug
+        run: |
+          echo "OWNER=${{ github.repository_owner }}"
+          echo "ACTOR=${{ github.actor }}"
+          echo "IMAGE=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}"
 
       - name: Extract metadata (tags, labels)
         id: meta
