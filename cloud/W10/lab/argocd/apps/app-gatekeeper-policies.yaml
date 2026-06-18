@@ -19,4 +19,5 @@ spec:
       prune: true
       selfHeal: true
     syncOptions:
-      - SkipDryRunOnMissingResource=true # Bỏ qua bước kiểm tra Dry-Run cho các Resource chưa có CRD (như K8sRequiredLabels)
+      - SkipDryRunOnMissingResource=true
+      - ServerSideApply=true # Ép ArgoCD sử dụng Server-Side Apply để tránh lỗi nhận diện sai Cluster-Scope của Gatekeeper Constraints
