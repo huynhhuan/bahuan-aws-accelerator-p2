@@ -1,0 +1,16 @@
+apiVersion: policy.sigstore.dev/v1beta1
+kind: ClusterImagePolicy
+metadata:
+  name: require-cosign-signature
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
+spec:
+  images:
+    - glob: "ghcr.io/huynhhuan/*" # Áp dụng cho toàn bộ image của bạn
+  authorities:
+    - key:
+        data: |
+          -----BEGIN PUBLIC KEY-----
+          MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAENQLqVLELyoX9aeqqKprGOdqqjVdX
+          Q5f6TWM3rpo7sv8R9iAFm8T/8TqikqmM5FgwKhddFMg9IXZ26repoTyeTg==
+          -----END PUBLIC KEY-----
