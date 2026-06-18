@@ -3,6 +3,8 @@ apiVersion: constraints.gatekeeper.sh/v1beta1
 kind: K8sBannedImageTags
 metadata:
   name: block-latest-tag
+  annotations:
+    argocd.argoproj.io/sync-wave: "2"
 spec:
   # enforcementAction: warn (Đã xóa để Gatekeeper chạy chế độ chặn (deny) mặc định) # Best Practice: Luôn bật warn (Audit mode) trước khi deny thật
   match:
@@ -19,6 +21,8 @@ apiVersion: constraints.gatekeeper.sh/v1beta1
 kind: K8sRequiredLimits
 metadata:
   name: require-limits
+  annotations:
+    argocd.argoproj.io/sync-wave: "2"
 spec:
   # enforcementAction: warn (Đã xóa để Gatekeeper chạy chế độ chặn (deny) mặc định)
   match:
@@ -33,6 +37,8 @@ apiVersion: constraints.gatekeeper.sh/v1beta1
 kind: K8sPSPAllowedUsers
 metadata:
   name: block-root-user
+  annotations:
+    argocd.argoproj.io/sync-wave: "2"
 spec:
   # enforcementAction: warn (Đã xóa để Gatekeeper chạy chế độ chặn (deny) mặc định)
   match:
@@ -50,6 +56,8 @@ apiVersion: constraints.gatekeeper.sh/v1beta1
 kind: K8sPSPHostNetworkingPorts
 metadata:
   name: block-host-network
+  annotations:
+    argocd.argoproj.io/sync-wave: "2"
 spec:
   # enforcementAction: warn (Đã xóa để Gatekeeper chạy chế độ chặn (deny) mặc định)
   match:

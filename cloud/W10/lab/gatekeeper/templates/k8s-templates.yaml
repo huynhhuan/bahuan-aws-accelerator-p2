@@ -5,6 +5,8 @@ apiVersion: templates.gatekeeper.sh/v1
 kind: ConstraintTemplate
 metadata:
   name: k8sbannedimagetags
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
 spec:
   crd:
     spec:
@@ -43,6 +45,8 @@ apiVersion: templates.gatekeeper.sh/v1
 kind: ConstraintTemplate
 metadata:
   name: k8srequiredlimits
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
 spec:
   crd:
     spec:
@@ -68,6 +72,8 @@ apiVersion: templates.gatekeeper.sh/v1
 kind: ConstraintTemplate
 metadata:
   name: k8spspallowedusers
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
 spec:
   crd:
     spec:
@@ -107,6 +113,8 @@ apiVersion: templates.gatekeeper.sh/v1
 kind: ConstraintTemplate
 metadata:
   name: k8spsphostnetworkingports
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
 spec:
   crd:
     spec:
