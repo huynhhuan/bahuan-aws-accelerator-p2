@@ -1,0 +1,61 @@
+# 1. Cấm image tag :latest
+apiVersion: constraints.gatekeeper.sh/v1beta1
+kind: K8sBannedImageTags
+metadata:
+  name: block-latest-tag
+spec:
+  # enforcementAction: warn (Đã xóa để Gatekeeper chạy chế độ chặn (deny) mặc định) # Best Practice: Luôn bật warn (Audit mode) trước khi deny thật
+  match:
+    kinds:
+      - apiGroups: [""]
+        kinds: ["Pod"]
+    excludedNamespaces: ["kube-system", "gatekeeper-system", "argocd", "default"] # Best Practice: Áp dụng toàn cụm trừ các ns hệ thống
+  parameters:
+    tags: ["latest"]
+
+---
+# 2. Bắt buộc có resources.limits
+apiVersion: constraints.gatekeeper.sh/v1beta1
+kind: K8sRequiredLimits
+metadata:
+  name: require-limits
+spec:
+  # enforcementAction: warn (Đã xóa để Gatekeeper chạy chế độ chặn (deny) mặc định)
+  match:
+    kinds:
+      - apiGroups: [""]
+        kinds: ["Pod"]
+    excludedNamespaces: ["kube-system", "gatekeeper-system", "argocd", "default"]
+
+---
+# 3. Cấm runAsUser: 0 (chạy root)
+apiVersion: constraints.gatekeeper.sh/v1beta1
+kind: K8sPSPAllowedUsers
+metadata:
+  name: block-root-user
+spec:
+  # enforcementAction: warn (Đã xóa để Gatekeeper chạy chế độ chặn (deny) mặc định)
+  match:
+    kinds:
+      - apiGroups: [""]
+        kinds: ["Pod"]
+    excludedNamespaces: ["kube-system", "gatekeeper-system", "argocd", "default"]
+  parameters:
+    runAsUser:
+      rule: MustRunAsNonRoot
+
+---
+# 4. Cấm hostNetwork: true
+apiVersion: constraints.gatekeeper.sh/v1beta1
+kind: K8sPSPHostNetworkingPorts
+metadata:
+  name: block-host-network
+spec:
+  # enforcementAction: warn (Đã xóa để Gatekeeper chạy chế độ chặn (deny) mặc định)
+  match:
+    kinds:
+      - apiGroups: [""]
+        kinds: ["Pod"]
+    excludedNamespaces: ["kube-system", "gatekeeper-system", "argocd", "default"]
+  parameters:
+    hostNetwork: false

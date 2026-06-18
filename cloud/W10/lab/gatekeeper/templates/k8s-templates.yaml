@@ -1,0 +1,130 @@
+# ======================================================================
+# 1. K8sBannedImageTags (Cấm sử dụng một số tag nhất định, ví dụ: latest)
+# ======================================================================
+apiVersion: templates.gatekeeper.sh/v1
+kind: ConstraintTemplate
+metadata:
+  name: k8sbannedimagetags
+spec:
+  crd:
+    spec:
+      names:
+        kind: K8sBannedImageTags
+      validation:
+        openAPIV3Schema:
+          type: object
+          properties:
+            tags:
+              type: array
+              items:
+                type: string
+  targets:
+    - target: admission.k8s.gatekeeper.sh
+      rego: |
+        package k8sbannedimagetags
+
+        violation[{"msg": msg}] {
+          container := input.review.object.spec.containers[_]
+          tags := [t | t = input.parameters.tags[_]]
+          satisfies_banned_tag(container.image, tags)
+          msg := sprintf("container <%v> uses banned image tag <%v>", [container.name, container.image])
+        }
+
+        satisfies_banned_tag(image, tags) {
+          tag := tags[_]
+          endswith(image, sprintf(":%v", [tag]))
+        }
+
+---
+# ======================================================================
+# 2. K8sRequiredLimits (Bắt buộc Pod phải cấu hình resources.limits)
+# ======================================================================
+apiVersion: templates.gatekeeper.sh/v1
+kind: ConstraintTemplate
+metadata:
+  name: k8srequiredlimits
+spec:
+  crd:
+    spec:
+      names:
+        kind: K8sRequiredLimits
+  targets:
+    - target: admission.k8s.gatekeeper.sh
+      rego: |
+        package k8srequiredlimits
+
+        violation[{"msg": msg, "details": {"missing_limits": missing}}] {
+          container := input.review.object.spec.containers[_]
+          not container.resources.limits
+          msg := sprintf("Container <%v> is missing resources.limits", [container.name])
+          missing := container.name
+        }
+
+---
+# ======================================================================
+# 3. K8sPSPAllowedUsers (Quản lý User chạy container, ví dụ: cấm chạy Root)
+# ======================================================================
+apiVersion: templates.gatekeeper.sh/v1
+kind: ConstraintTemplate
+metadata:
+  name: k8spspallowedusers
+spec:
+  crd:
+    spec:
+      names:
+        kind: K8sPSPAllowedUsers
+      validation:
+        openAPIV3Schema:
+          type: object
+          properties:
+            runAsUser:
+              type: object
+              properties:
+                rule:
+                  type: string
+  targets:
+    - target: admission.k8s.gatekeeper.sh
+      rego: |
+        package k8spspallowedusers
+
+        violation[{"msg": msg}] {
+          input.parameters.runAsUser.rule == "MustRunAsNonRoot"
+          c := input.review.object.spec.containers[_]
+          not has_run_as_non_root(c)
+          not has_run_as_non_root(input.review.object.spec)
+          msg := sprintf("Container %v is not configured with runAsNonRoot: true", [c.name])
+        }
+
+        has_run_as_non_root(obj) {
+          obj.securityContext.runAsNonRoot == true
+        }
+
+---
+# ======================================================================
+# 4. K8sPSPHostNetworkingPorts (Cấm sử dụng hostNetwork của Node)
+# ======================================================================
+apiVersion: templates.gatekeeper.sh/v1
+kind: ConstraintTemplate
+metadata:
+  name: k8spsphostnetworkingports
+spec:
+  crd:
+    spec:
+      names:
+        kind: K8sPSPHostNetworkingPorts
+      validation:
+        openAPIV3Schema:
+          type: object
+          properties:
+            hostNetwork:
+              type: boolean
+  targets:
+    - target: admission.k8s.gatekeeper.sh
+      rego: |
+        package k8spsphostnetworkingports
+
+        violation[{"msg": msg}] {
+          input.parameters.hostNetwork == false
+          input.review.object.spec.hostNetwork == true
+          msg := "Sử dụng hostNetwork: true là không được phép!"
+        }
