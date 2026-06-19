@@ -10,10 +10,7 @@
 ![alt text](image-3.png)
 
 ## 4. Amazon Macie Job hoàn tất
-
+![alt text](image-1.png)
 
 ## 5. Chi tiết Amazon Macie Findings
-
-
-## 6. Email cảnh báo nhận được từ SNS
-
+![alt text](image.png)

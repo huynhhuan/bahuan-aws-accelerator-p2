@@ -80,7 +80,7 @@ resource "aws_cloudwatch_event_target" "sns_target" {
 
 # 6. Macie Classification Job
 resource "aws_macie2_classification_job" "scan_job" {
-  name        = "Scan-PII-Data-Job-TF"
+  name        = "Scan-PII-Data-Job-TF-4"
   job_type    = "ONE_TIME"
   job_status  = "RUNNING"
   
