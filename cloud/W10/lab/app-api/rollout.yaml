@@ -23,7 +23,7 @@ spec:
     spec:
       containers:
       - name: api
-        image: ghcr.io/huynhhuan/w10-api:0.0.2
+        image: ghcr.io/huynhhuan/w10-api:0.0.3
         imagePullPolicy: IfNotPresent
         securityContext: # Bổ sung SecurityContext để pass bài Gatekeeper K8sPSPAllowedUsers
           runAsNonRoot: true
@@ -33,7 +33,7 @@ spec:
           protocol: TCP
         env:
         - name: VERSION
-          value: "v0.0.2"
+          value: "v0.0.3"
         - name: ERROR_RATE
           value: "0"
         livenessProbe:
