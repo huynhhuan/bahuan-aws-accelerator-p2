@@ -86,7 +86,7 @@ jobs:
           COSIGN_PASSWORD: ${{ secrets.COSIGN_PASSWORD }}
         run: |
           echo "$COSIGN_PRIVATE_KEY" > cosign.key
-          cosign sign --key cosign.key -y ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.semver.outputs.version }}
+          cosign sign --key cosign.key -y --registry-referrersMode=legacy ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.semver.outputs.version }}
           rm -f cosign.key
 
       - name: Update rollout.yaml with new version
